@@ -1,0 +1,7 @@
+name: FunSummons
+main: com.bruhdows.funsummons.FunSummonsPlugin
+api-version: 1.21
+version: 1.0
+commands:
+  getitem:
+  accessories:
