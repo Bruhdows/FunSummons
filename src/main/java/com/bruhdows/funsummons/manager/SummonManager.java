@@ -6,10 +6,8 @@ import com.bruhdows.funsummons.model.SummonConfig;
 import com.bruhdows.funsummons.model.WandConfig;
 import com.bruhdows.funsummons.summon.SummonAI;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -31,8 +29,7 @@ public class SummonManager {
     private final Map<UUID, Long> playerFairyCooldowns = new HashMap<>();
     private final Map<UUID, Allay> playerFairies = new HashMap<>();
     private final Map<UUID, BossBar> fairyBossBars = new HashMap<>();
-    private final Map<UUID, Location> fairyTargetLocations = new HashMap<>();
-    
+
     public SummonManager(FunSummonsPlugin plugin) {
         this.plugin = plugin;
         startAITick();
@@ -108,14 +105,15 @@ public class SummonManager {
         }, 0L, 1L);
     }
     
-    public boolean summon(Player player, String summonId, WandConfig wandConfig) {
+    public void summon(Player player, String summonId, WandConfig wandConfig) {
         SummonConfig config = plugin.getConfigManager().getSummon(summonId);
         if (config == null) {
-            return false;
+            return;
         }
         
         if (summonId.equals("fairy_companion")) {
-            return summonFairy(player, wandConfig);
+            summonFairy(player, wandConfig);
+            return;
         }
         
         List<LivingEntity> summons = playerSummons.computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>());
@@ -124,7 +122,7 @@ public class SummonManager {
         if (summons.size() >= maxSlots) {
             player.sendActionBar(plugin.getMiniMessage().deserialize("<red>Maximum summons reached!</red>"));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            return false;
+            return;
         }
         
         int manaCost = wandConfig.getSummonCost();
@@ -134,7 +132,7 @@ public class SummonManager {
                 String.format("<red>Not enough mana! Need %d mana</red>", manaCost)
             ));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            return false;
+            return;
         }
         
         int cooldownTicks = calculateCooldown(wandConfig.getCooldown(), player);
@@ -154,7 +152,6 @@ public class SummonManager {
         entity.setRemoveWhenFarAway(false);
         entity.setPersistent(true);
         entity.setFireTicks(0);
-        entity.setVisualFire(false);
 
         AttributeInstance maxHealth = entity.getAttribute(Attribute.MAX_HEALTH);
         if (maxHealth != null) {
@@ -236,15 +233,14 @@ public class SummonManager {
         ));
         
         plugin.getManaManager().updateManaBar(player);
-        
-        return true;
+
     }
     
-    private boolean summonFairy(Player player, WandConfig wandConfig) {
+    private void summonFairy(Player player, WandConfig wandConfig) {
         if (playerFairies.containsKey(player.getUniqueId())) {
             player.sendActionBar(plugin.getMiniMessage().deserialize("<red>You already have a fairy summoned!</red>"));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            return false;
+            return;
         }
         
         int manaCost = wandConfig.getSummonCost();
@@ -254,7 +250,7 @@ public class SummonManager {
                 String.format("<red>Not enough mana! Need %d mana</red>", manaCost)
             ));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            return false;
+            return;
         }
         
         int cooldownTicks = calculateCooldown(wandConfig.getCooldown(), player);
@@ -276,8 +272,6 @@ public class SummonManager {
             scaleAttr.setBaseValue(3.0);
         }
         
-        fairyTargetLocations.put(player.getUniqueId(), loc.clone());
-        
         playerFairies.put(player.getUniqueId(), allay);
         playerFairyCooldowns.put(player.getUniqueId(), System.currentTimeMillis() + 300000);
         
@@ -295,14 +289,7 @@ public class SummonManager {
         ));
         
         plugin.getManaManager().updateManaBar(player);
-        
-        return true;
-    }
-    
-    public void updateDragonTarget(Player player, Location targetLoc) {
-        if (playerFairies.containsKey(player.getUniqueId())) {
-            fairyTargetLocations.put(player.getUniqueId(), targetLoc);
-        }
+
     }
     
     private int calculateCooldown(int baseCooldown, Player player) {
@@ -352,8 +339,7 @@ public class SummonManager {
         }
         
         playerFairyCooldowns.remove(playerId);
-        fairyTargetLocations.remove(playerId);
-        
+
         BossBar bossBar = fairyBossBars.remove(playerId);
         if (bossBar != null) {
             Player player = Bukkit.getPlayer(playerId);
@@ -367,7 +353,9 @@ public class SummonManager {
     public Allay getPlayerFairy(Player player) {
         return playerFairies.get(player.getUniqueId());
     }
-    
+
+    // It is an entity technically...
+    @SuppressWarnings("SuspiciousMethodCalls")
     public boolean isPlayerFairy(Entity entity) {
         return playerFairies.containsValue(entity);
     }
@@ -438,7 +426,7 @@ public class SummonManager {
         if (!isSummon(entity)) return null;
         
         if (entity.hasMetadata("summon")) {
-            String uuidString = entity.getMetadata("summon").get(0).asString();
+            String uuidString = entity.getMetadata("summon").getFirst().asString();
             return Bukkit.getPlayer(UUID.fromString(uuidString));
         }
         
@@ -455,7 +443,7 @@ public class SummonManager {
         List<LivingEntity> summons = getSummons(player);
         for (LivingEntity summon : summons) {
             if (summon.hasMetadata("summonConfig")) {
-                String configId = summon.getMetadata("summonConfig").get(0).asString();
+                String configId = summon.getMetadata("summonConfig").getFirst().asString();
                 if ("warden".equals(configId)) {
                     return true;
                 }

@@ -59,7 +59,7 @@ public class SummonListener implements Listener {
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (plugin.getSummonManager().isSummon(event.getDamager())) {
             Player owner = plugin.getSummonManager().getSummonOwner(event.getDamager());
-            if (owner != null && event.getEntity().equals(owner)) {
+            if (event.getEntity().equals(owner)) {
                 event.setCancelled(true);
             }
         }

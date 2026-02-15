@@ -24,13 +24,11 @@ public class GetItemCommand implements CommandExecutor, TabCompleter {
     
     @Override
     public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, String @NonNull [] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can use this command!");
             return true;
         }
-        
-        Player player = (Player) sender;
-        
+
         if (args.length < 2) {
             player.sendMessage(plugin.getMiniMessage().deserialize(
                 "<red>Usage: /getitem <wand|accessory> <id></red>"
@@ -81,7 +79,7 @@ public class GetItemCommand implements CommandExecutor, TabCompleter {
     }
     
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    public List<String> onTabComplete(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, String[] args) {
         if (args.length == 1) {
             return Arrays.asList("wand", "accessory");
         } else if (args.length == 2) {

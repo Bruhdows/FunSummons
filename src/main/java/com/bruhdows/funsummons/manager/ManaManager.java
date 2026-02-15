@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ManaManager {
@@ -44,11 +45,7 @@ public class ManaManager {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (data != null) {
-                            playerData.put(player.getUniqueId(), data);
-                        } else {
-                            playerData.put(player.getUniqueId(), new PlayerData());
-                        }
+                        playerData.put(player.getUniqueId(), Objects.requireNonNullElseGet(data, PlayerData::new));
                         plugin.getAccessoryManager().recalculateStats(player);
                     }
                 }.runTask(plugin);

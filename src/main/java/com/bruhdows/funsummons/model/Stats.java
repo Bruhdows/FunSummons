@@ -1,5 +1,8 @@
 package com.bruhdows.funsummons.model;
 
+import lombok.Getter;
+
+@Getter
 public class Stats {
     private int maxMana;
     private double manaRegen;
@@ -85,16 +88,5 @@ public class Stats {
         this.speedBoost += other.speedBoost;
         this.summonSize += other.summonSize;
     }
-    
-    public int getMaxMana() { return maxMana; }
-    public double getManaRegen() { return manaRegen; }
-    public int getSummonSlots() { return summonSlots; }
-    public double getDamageBoost() { return damageBoost; }
-    public double getHealthBoost() { return healthBoost; }
-    public int getCooldownReduction() { return cooldownReduction; }
-    public int getSummonDuration() { return summonDuration; }
-    public double getCritChance() { return critChance; }
-    public double getKnockbackResistance() { return knockbackResistance; }
-    public double getSpeedBoost() { return speedBoost; }
-    public double getSummonSize() { return summonSize; }
+
 }

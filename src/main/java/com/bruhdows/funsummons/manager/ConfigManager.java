@@ -83,10 +83,6 @@ public class ConfigManager {
         return accessories.get(id);
     }
     
-    public Map<String, SummonConfig> getAllSummons() {
-        return summons;
-    }
-    
     public Map<String, WandConfig> getAllWands() {
         return wands;
     }

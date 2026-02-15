@@ -14,6 +14,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class ItemUtil {
     private final FunSummonsPlugin plugin;
     private final NamespacedKey wandKey;
@@ -36,10 +37,6 @@ public class ItemUtil {
             lore.add(plugin.getMiniMessage().deserialize(noItalic(line)));
         }
         meta.lore(lore);
-        
-        if (config.getCustomModelData() > 0) {
-            meta.setCustomModelData(config.getCustomModelData());
-        }
         
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         
@@ -92,13 +89,5 @@ public class ItemUtil {
 
     public static String noItalic(String text) {
         return "<!i>" + text;
-    }
-
-    public static List<String> noItalic(List<String> lines) {
-        List<String> result = new ArrayList<>();
-        for (String line : lines) {
-            result.add(noItalic(line));
-        }
-        return result;
     }
 }
