@@ -4,4 +4,5 @@ api-version: 1.21
 version: 1.0
 commands:
   getitem:
+    permission: funsummons.command.getitem
   accessories:

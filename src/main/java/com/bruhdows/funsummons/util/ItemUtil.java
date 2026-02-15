@@ -4,9 +4,9 @@ import com.bruhdows.funsummons.FunSummonsPlugin;
 import com.bruhdows.funsummons.model.AccessoryConfig;
 import com.bruhdows.funsummons.model.WandConfig;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -26,8 +26,7 @@ public class ItemUtil {
     }
     
     public ItemStack createWand(WandConfig config) {
-        Material material = Material.valueOf(config.getMaterial());
-        ItemStack item = new ItemStack(material);
+        ItemStack item = new ItemStack(config.getMaterial());
         ItemMeta meta = item.getItemMeta();
         
         meta.displayName(plugin.getMiniMessage().deserialize(noItalic(config.getName())));
@@ -42,6 +41,8 @@ public class ItemUtil {
             meta.setCustomModelData(config.getCustomModelData());
         }
         
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        
         meta.getPersistentDataContainer().set(wandKey, PersistentDataType.STRING, config.getId());
         
         item.setItemMeta(meta);
@@ -51,8 +52,7 @@ public class ItemUtil {
     public ItemStack createAccessory(AccessoryConfig config) {
         if (config == null) return null;
         
-        Material material = Material.valueOf(config.getMaterial());
-        ItemStack item = new ItemStack(material);
+        ItemStack item = new ItemStack(config.getMaterial());
         ItemMeta meta = item.getItemMeta();
         
         meta.displayName(plugin.getMiniMessage().deserialize(noItalic(config.getName())));
@@ -66,6 +66,8 @@ public class ItemUtil {
         if (config.getCustomModelData() > 0) {
             meta.setCustomModelData(config.getCustomModelData());
         }
+        
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         
         meta.getPersistentDataContainer().set(accessoryKey, PersistentDataType.STRING, config.getId());
         

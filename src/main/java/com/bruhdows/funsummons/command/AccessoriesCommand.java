@@ -17,7 +17,7 @@ public class AccessoriesCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this com.bruhdows.funsummons.command!");
+            sender.sendMessage("Only players can use this command!");
             return true;
         }
         

@@ -1,5 +1,6 @@
 package com.bruhdows.funsummons;
 
+import com.bruhdows.funsummons.adapter.MaterialTypeAdapter;
 import com.bruhdows.funsummons.command.AccessoriesCommand;
 import com.bruhdows.funsummons.command.GetItemCommand;
 import com.bruhdows.funsummons.listener.PlayerListener;
@@ -13,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -34,6 +36,7 @@ public class FunSummonsPlugin extends JavaPlugin {
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .disableHtmlEscaping()
+                .registerTypeAdapter(Material.class, new MaterialTypeAdapter())
                 .create();
         this.miniMessage = MiniMessage.builder().build();
         this.itemUtil = new ItemUtil(this);

@@ -6,6 +6,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.*;
@@ -21,7 +22,6 @@ public class ManaManager {
     
     public ManaManager(FunSummonsPlugin plugin) {
         this.plugin = plugin;
-        loadAllPlayerData();
         startManaRegen();
     }
     
@@ -33,6 +33,27 @@ public class ManaManager {
                 updateManaBar(player);
             }
         }, 0L, 1L);
+    }
+    
+    public void loadPlayerDataAsync(Player player) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                PlayerData data = loadPlayerData(player.getUniqueId());
+                
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (data != null) {
+                            playerData.put(player.getUniqueId(), data);
+                        } else {
+                            playerData.put(player.getUniqueId(), new PlayerData());
+                        }
+                        plugin.getAccessoryManager().recalculateStats(player);
+                    }
+                }.runTask(plugin);
+            }
+        }.runTaskAsynchronously(plugin);
     }
     
     public PlayerData getPlayerData(Player player) {
@@ -65,27 +86,6 @@ public class ManaManager {
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to load player data: " + uuid);
             return null;
-        }
-    }
-    
-    private void loadAllPlayerData() {
-        File folder = new File(plugin.getDataFolder(), "playerdata");
-        if (!folder.exists()) return;
-        
-        File[] files = folder.listFiles((dir, name) -> name.endsWith(".json"));
-        if (files != null) {
-            for (File file : files) {
-                String name = file.getName().replace(".json", "");
-                try {
-                    UUID uuid = UUID.fromString(name);
-                    PlayerData data = loadPlayerData(uuid);
-                    if (data != null) {
-                        playerData.put(uuid, data);
-                    }
-                } catch (IllegalArgumentException e) {
-                    plugin.getLogger().warning("Invalid player data file: " + file.getName());
-                }
-            }
         }
     }
     
