@@ -19,4 +19,4 @@ Created in about 2 hours.
 
 **Go either to Releases OR click the link below:**
 
-Link soon
+[Download FunSummons-1.0.jar](https://github.com/Bruhdows/FunSummons/releases/download/v1.0/FunSummons-1.0.jar)
